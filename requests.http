@@ -1,0 +1,128 @@
+### Variables de entorno (VS Code REST Client / Rider HTTP Client)
+@host = http://localhost:5080
+@token = PEGAR_AQUI_EL_TOKEN_DEL_LOGIN
+
+### 1. Health-check (anónimo)
+GET {{host}}/api/health
+
+### 2. Login con admin seed
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "correo": "admin@biblioteca.local",
+  "password": "Admin123!"
+}
+
+### 3. Crear un Asistente de Biblioteca
+POST {{host}}/api/usuarios
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "correo": "asistente@biblioteca.local",
+  "nombreCompleto": "Asistente de Pruebas",
+  "nombreUsuario": "asistente",
+  "password": "Asistente1!",
+  "perfil": "AsistenteBiblioteca"
+}
+
+### 4. Otorgar permiso de gestión al Asistente
+PATCH {{host}}/api/usuarios/asistente@biblioteca.local/permisos
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "puedeGestionarArchivos": true }
+
+### 5. Listar usuarios
+GET {{host}}/api/usuarios?incluirInactivos=true
+Authorization: Bearer {{token}}
+
+### 6. Historial de un usuario
+GET {{host}}/api/usuarios/asistente@biblioteca.local/historial
+Authorization: Bearer {{token}}
+
+### 7. Inactivar usuario
+PATCH {{host}}/api/usuarios/asistente@biblioteca.local/inactivar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "motivo": "Prueba de inactivación" }
+
+### 8. Reactivar usuario
+PATCH {{host}}/api/usuarios/asistente@biblioteca.local/reactivar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "motivo": "Vuelve al puesto" }
+
+### 9. Listar carpetas raíz
+GET {{host}}/api/carpetas/raices
+Authorization: Bearer {{token}}
+
+### 10. Árbol completo
+GET {{host}}/api/carpetas/arbol
+Authorization: Bearer {{token}}
+
+### 11. Crear subcarpeta dentro de la raíz id=1
+POST {{host}}/api/carpetas
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Manuales 2026",
+  "descripcion": "Documentación interna",
+  "carpetaPadreId": 1
+}
+
+### 12. Subir archivo (multipart/form-data)
+# Asegúrate de tener un archivo válido en la ruta indicada.
+POST {{host}}/api/archivos/subir
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----b
+
+------b
+Content-Disposition: form-data; name="carpetaId"
+
+1
+------b
+Content-Disposition: form-data; name="nombre"
+
+Manual de inducción
+------b
+Content-Disposition: form-data; name="descripcion"
+
+Documento PDF para nuevos usuarios.
+------b
+Content-Disposition: form-data; name="archivo"; filename="manual.pdf"
+Content-Type: application/pdf
+
+< ./manual.pdf
+------b--
+
+### 13. Listar archivos de una carpeta
+GET {{host}}/api/archivos/carpeta/1
+Authorization: Bearer {{token}}
+
+### 14. Editar nombre/descripción de un archivo (id=1)
+PATCH {{host}}/api/archivos/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "nombre": "Manual de inducción v2",
+  "descripcion": "Versión actualizada."
+}
+
+### 15. Eliminar archivo (lógico → físico a los 2 min)
+DELETE {{host}}/api/archivos/1
+Authorization: Bearer {{token}}
+
+### 16. Descargar archivo
+GET {{host}}/api/archivos/1/descargar
+Authorization: Bearer {{token}}
+
+### 17. Consultar logs (Admin/Gerente)
+GET {{host}}/api/logs?entidad=Archivo&pagina=1&tamano=20
+Authorization: Bearer {{token}}

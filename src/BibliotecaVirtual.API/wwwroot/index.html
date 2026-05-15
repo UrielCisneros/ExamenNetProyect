@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Biblioteca Virtual</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+
+  <!-- ===================== LOGIN ===================== -->
+  <section id="vista-login" class="vista">
+    <div class="login-box">
+      <div class="login-logo">📚</div>
+      <h1>Biblioteca Virtual</h1>
+      <p class="muted">Inicia sesión para continuar</p>
+      <form id="form-login">
+        <label>Correo</label>
+        <input id="login-correo" type="email" required autocomplete="username" />
+        <label>Contraseña</label>
+        <input id="login-password" type="password" required autocomplete="current-password" />
+        <button type="submit" class="btn primary">Ingresar</button>
+        <p id="login-error" class="error"></p>
+      </form>
+      <p class="hint muted">
+        Credenciales por defecto:<br/>
+        <code>admin@biblioteca.local / Admin123!</code>
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== APP ===================== -->
+  <section id="vista-app" class="vista hidden">
+    <div class="app-layout">
+
+      <!-- ===== Menú lateral ===== -->
+      <nav class="nav-lateral">
+        <div class="nav-brand">
+          <span class="nav-brand-icon">📚</span>
+          <span class="nav-brand-text">Biblioteca Virtual</span>
+        </div>
+
+        <ul class="nav-menu">
+          <li>
+            <button data-tab="carpetas" class="nav-item active">
+              <span class="nav-icon">📁</span> Carpetas
+            </button>
+          </li>
+          <li>
+            <button data-tab="usuarios" class="nav-item gestion-admin hidden">
+              <span class="nav-icon">👥</span> Usuarios
+            </button>
+          </li>
+          <li>
+            <button data-tab="logs" class="nav-item gestion-admin hidden">
+              <span class="nav-icon">📋</span> Bitácora
+            </button>
+          </li>
+        </ul>
+
+        <div class="nav-footer">
+          <div class="nav-user">
+            <div class="nav-avatar" id="nav-avatar">A</div>
+            <div class="nav-user-info">
+              <span id="user-nombre"></span>
+              <small id="user-perfil" class="nav-perfil"></small>
+            </div>
+          </div>
+          <button id="btn-logout" class="nav-logout">
+            <span class="nav-icon">⏻</span> Cerrar sesión
+          </button>
+        </div>
+      </nav>
+
+      <!-- ===== Contenido principal ===== -->
+      <div class="contenido-principal">
+
+        <!-- Tab Carpetas -->
+        <main id="tab-carpetas" class="tab-content active">
+          <aside class="sidebar">
+            <div class="sidebar-header">
+              <h3>Carpetas</h3>
+              <div style="display:flex;gap:4px;align-items:center;">
+                <button id="btn-nueva-subcarpeta-sidebar" class="btn small hidden" title="Nueva subcarpeta en la carpeta seleccionada">＋ Nueva</button>
+                <button id="btn-recargar-arbol" class="btn small ghost" title="Recargar">↻</button>
+              </div>
+            </div>
+            <div id="arbol-carpetas" class="arbol"></div>
+          </aside>
+
+          <section class="main-pane">
+            <div class="breadcrumb" id="breadcrumb">Selecciona una carpeta</div>
+
+            <div class="toolbar gestion-archivos hidden">
+              <div class="toolbar-group">
+                <button id="btn-nueva-subcarpeta" class="tbtn tbtn--outline" disabled>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                  Nueva subcarpeta
+                </button>
+                <button id="btn-subir-archivo" class="tbtn tbtn--primary" disabled>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                  Subir archivo
+                </button>
+              </div>
+
+              <p id="gestion-hint-msg" class="toolbar-hint">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Selecciona una carpeta del árbol para habilitar las acciones
+              </p>
+
+              <div class="toolbar-group toolbar-group--right">
+                <button id="btn-eliminar-carpeta" class="tbtn tbtn--danger" style="display:none">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                  Eliminar carpeta
+                </button>
+              </div>
+            </div>
+
+            <h4 class="section-title">Subcarpetas</h4>
+            <div id="lista-subcarpetas" class="grid"></div>
+
+            <h4 class="section-title">Archivos</h4>
+            <table class="tabla">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Tipo</th>
+                  <th>Tamaño</th>
+                  <th>Creado por</th>
+                  <th>Fecha</th>
+                  <th class="acciones">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-archivos"></tbody>
+            </table>
+          </section>
+        </main>
+
+        <!-- Tab Usuarios -->
+        <main id="tab-usuarios" class="tab-content hidden">
+          <div class="page-header">
+            <h2 class="page-title">Gestión de Usuarios</h2>
+          </div>
+          <div class="actions-bar">
+            <button id="btn-nuevo-usuario" class="btn primary">＋ Nuevo usuario</button>
+            <label class="muted"><input type="checkbox" id="chk-incluir-inactivos" /> Incluir inactivos</label>
+          </div>
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Correo</th><th>Nombre</th><th>Usuario</th><th>Perfil</th>
+                <th>Estado</th><th>Permiso</th><th>Creado</th><th class="acciones">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-usuarios"></tbody>
+          </table>
+        </main>
+
+        <!-- Tab Logs -->
+        <main id="tab-logs" class="tab-content hidden">
+          <div class="page-header">
+            <h2 class="page-title">Bitácora de Acciones</h2>
+          </div>
+          <div class="actions-bar filtros">
+            <input id="log-correo" placeholder="Correo..." />
+            <select id="log-entidad">
+              <option value="">Todas las entidades</option>
+              <option value="Usuario">Usuario</option>
+              <option value="Carpeta">Carpeta</option>
+              <option value="Archivo">Archivo</option>
+            </select>
+            <select id="log-accion">
+              <option value="">Todas las acciones</option>
+              <option value="Crear">Crear</option>
+              <option value="Editar">Editar</option>
+              <option value="Eliminar">Eliminar</option>
+              <option value="Reactivar">Reactivar</option>
+              <option value="Inactivar">Inactivar</option>
+              <option value="Descargar">Descargar</option>
+              <option value="Login">Login</option>
+              <option value="OtorgarPermiso">OtorgarPermiso</option>
+            </select>
+            <button id="btn-filtrar-logs" class="btn primary">Buscar</button>
+          </div>
+          <table class="tabla">
+            <thead>
+              <tr><th>Fecha</th><th>Usuario</th><th>Acción</th><th>Entidad</th><th>Detalle</th></tr>
+            </thead>
+            <tbody id="tabla-logs"></tbody>
+          </table>
+        </main>
+
+      </div><!-- /contenido-principal -->
+    </div><!-- /app-layout -->
+  </section>
+
+  <!-- ===================== DIALOG (confirm / prompt) ===================== -->
+  <div id="dialog" class="modal hidden">
+    <div class="dlg-card">
+      <div id="dlg-body"></div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL ===================== -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <header>
+        <h3 id="modal-titulo">Título</h3>
+        <button class="btn ghost" data-close-modal>✕</button>
+      </header>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+## Build
+bin/
+obj/
+out/
+*.user
+*.suo
+.vs/
+
+## Bases de datos locales
+*.db
+*.db-shm
+*.db-wal
+
+## Almacenamiento de archivos en desarrollo
+src/BibliotecaVirtual.API/Storage/
+
+## Logs
+*.log
